@@ -1,14 +1,35 @@
 import time
+from DataStructures.List import array_list as lt
+import csv
+import os
+
+data_dir = os.path.dirname(os.path.realpath('__file__')) + '/Data/'
 
 def new_logic():
     """
     Crea el catalogo para almacenar las estructuras de datos
     """
     #TODO: Llama a las funciónes de creación de las estructuras de datos
-    pass
+    movies = {"fecha": None, "or_title": None, "idioma": None, "duaracion": None
+              , "presupuesto": None, "ingresos": None,
+              "ganancias": None}
 
-
+    movies["fecha"] = lt.new_list()
+    movies["or_title"] = lt.new_list()
+    movies["idioma"] = lt.new_list()
+    movies["duracion"] = lt.new_list()
+    movies["presupuesto"] = lt.new_list()
+    movies["ingresos"] = lt.new_list()
+    movies["ganancias"] = lt.new_list()
 # Funciones para la carga de datos
+
+def load_fecha(movies):
+    fecha_file =  data_dir + "movies-large.csv"
+    input_file= csv.DictReader(open(fecha_file, encoding='utf-8'))
+    for release_date in input_file:
+        add_fecha(release_date, movies)
+    return 
+        
 
 def load_data(catalog, filename):
     """
