@@ -1,12 +1,13 @@
 import sys
+import App.logic as logic
 
 
 def new_logic():
     """
         Se crea una instancia del controlador
     """
-    #TODO: Llamar la función de la lógica donde se crean las estructuras de datos
-    pass
+    control = logic.new_logic()
+    return control
 
 def print_menu():
     print("Bienvenido")
@@ -22,11 +23,8 @@ def print_menu():
     print("0- Salir")
 
 def load_data(control):
-    """
-    Carga los datos
-    """
-    #TODO: Realizar la carga de datos
-    pass
+    logic.load_data(control)
+    print("Datos cagados correctamente")
 
 
 def print_data(control, id):

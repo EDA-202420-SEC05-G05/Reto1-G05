@@ -3,6 +3,7 @@ from DataStructures.List import array_list as lt
 import csv
 import os
 
+csv.field_size_limit(2147483647)
 data_dir = os.path.dirname(os.path.realpath('__file__')) + '/Data/'
 
 def new_logic():
@@ -23,30 +24,71 @@ def new_logic():
     movies["ganancias"] = lt.new_list()
 # Funciones para la carga de datos
 
-def load_fecha(movies):
-    fecha_file =  data_dir + "movies-large.csv"
-    input_file= csv.DictReader(open(fecha_file, encoding='utf-8'))
-    for release_date in input_file:
-        add_fecha(release_date, movies)
-    return 
-        
+def load_fecha(movies, filename):
+    input_file = csv.DictReader(open(filename, encoding='utf-8'))
+    for row in input_file:
+        release_date = row['release_date'] if row['release_date'] else "Desconocido"
+        lt.addLast(movies['fecha'], release_date)
 
+# Función para cargar los títulos originales de las películas
+def load_title(movies, filename):
+    input_file = csv.DictReader(open(filename, encoding='utf-8'))
+    for row in input_file:
+        or_title = row['title'] if row['title'] else "Desconocido"
+        lt.addLast(movies['or_title'], or_title)
+
+# Función para cargar el idioma original de las películas
+def load_idioma(movies, filename):
+    input_file = csv.DictReader(open(filename, encoding='utf-8'))
+    for row in input_file:
+        idioma = row['original_language'] if row['original_language'] else "Desconocido"
+        lt.addLast(movies['idioma'], idioma)
+
+# Función para cargar la duración, presupuesto, ingresos y calcular ganancias
+def load_financials(movies, filename):
+    input_file = csv.DictReader(open(filename, encoding='utf-8'))
+    for row in input_file:
+        duracion = row['runtime'] if row['runtime'] else "Desconocido"
+        presupuesto = int(row['budget']) if row['budget'].isdigit() else 0
+        ingresos = int(row['revenue']) if row['revenue'].isdigit() else 0
+        lt.addLast(movies['duracion'], duracion)
+        lt.addLast(movies['presupuesto'], presupuesto)
+        lt.addLast(movies['ingresos'], ingresos)
+        lt.addLast(movies['ganancias'], ingresos - presupuesto if ingresos and presupuesto else "Indefinido")
 def load_data(catalog, filename):
-    """
-    Carga los datos del reto
-    """
-    # TODO: Realizar la carga de datos
-    pass
+    
+    load_fecha(catalog, filename)
+    load_title(catalog, filename)
+    load_idioma(catalog, filename)
+    load_financials(catalog, filename)
+    
+    return catalog
 
 # Funciones de consulta sobre el catálogo
 
-def get_data(catalog, id):
-    """
-    Retorna un dato por su ID.
-    """
-    #TODO: Consulta en las Llamar la función del modelo para obtener un dato
-    pass
+def get_data(movies, id):
+    fecha = lt.getElement(movies['fecha'], id) if lt.getElement(movies['fecha'], id) else "Desconocido"
+    or_title = lt.getElement(movies['or_title'], id) if lt.getElement(movies['or_title'], id) else "Desconocido"
+    idioma = lt.getElement(movies['idioma'], id) if lt.getElement(movies['idioma'], id) else "Desconocido"
+    duracion = lt.getElement(movies['duracion'], id) if lt.getElement(movies['duracion'], id) else "Desconocido"
+    presupuesto = lt.getElement(movies['presupuesto'], id)
+    ingresos = lt.getElement(movies['ingresos'], id)
+    if presupuesto == 0:
+        presupuesto = "Indefinido"
+    if ingresos == 0:
+        ingresos = "Indefinido"
+    if isinstance(presupuesto, int) and isinstance(ingresos, int):
+        ganancias = ingresos - presupuesto
+    else:
+        ganancias = "Indefinido"
+    
+    return [fecha, or_title, idioma, duracion, presupuesto, ingresos, ganancias]
 
+def report_data(movies):
+    total_movies = lt.size(movies['fecha'])
+    first_five = [get_data(movies, i+1) for i in range(5)]
+    last_five = [get_data(movies, total_movies - 4 + i) for i in range(5)]
+    return total_movies, first_five, last_five
 
 def req_1(catalog):
     """
