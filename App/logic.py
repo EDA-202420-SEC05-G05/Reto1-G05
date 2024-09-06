@@ -3,6 +3,7 @@ from DataStructures.List import array_list as lt
 import csv
 import os
 
+
 csv.field_size_limit(2147483647)
 data_dir = os.path.dirname(os.path.realpath('__file__')) + '/Data/'
 
@@ -22,6 +23,7 @@ def new_logic():
     movies["presupuesto"] = lt.new_list()
     movies["ingresos"] = lt.new_list()
     movies["ganancias"] = lt.new_list()
+    return movies
 # Funciones para la carga de datos
 
 def load_fecha(movies, filename):
@@ -43,25 +45,32 @@ def load_idioma(movies, filename):
     for row in input_file:
         idioma = row['original_language'] if row['original_language'] else "Desconocido"
         lt.addLast(movies['idioma'], idioma)
-
-# Función para cargar la duración, presupuesto, ingresos y calcular ganancias
-def load_financials(movies, filename):
+        
+# Función para cargar la duración de las películas
+def load_duracion(movies, filename):
     input_file = csv.DictReader(open(filename, encoding='utf-8'))
     for row in input_file:
         duracion = row['runtime'] if row['runtime'] else "Desconocido"
+        lt.addLast(movies['duracion'], duracion)
+
+# Función para cargar el presupuesto, ingresos y calcular ganancias
+def load_financials(movies, filename):
+    input_file = csv.DictReader(open(filename, encoding='utf-8'))
+    for row in input_file:
         presupuesto = int(row['budget']) if row['budget'].isdigit() else 0
         ingresos = int(row['revenue']) if row['revenue'].isdigit() else 0
-        lt.addLast(movies['duracion'], duracion)
         lt.addLast(movies['presupuesto'], presupuesto)
         lt.addLast(movies['ingresos'], ingresos)
         lt.addLast(movies['ganancias'], ingresos - presupuesto if ingresos and presupuesto else "Indefinido")
+
+
 def load_data(catalog, filename):
-    
     load_fecha(catalog, filename)
     load_title(catalog, filename)
     load_idioma(catalog, filename)
+    load_duracion(catalog, filename)
     load_financials(catalog, filename)
-    
+        
     return catalog
 
 # Funciones de consulta sobre el catálogo

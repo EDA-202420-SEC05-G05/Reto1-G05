@@ -23,16 +23,27 @@ def print_menu():
     print("0- Salir")
 
 def load_data(control):
-    logic.load_data(control)
+    filename = input("Ingrese el nombre el del archivo ")
+    logic.load_data(control, filename)
     print("Datos cagados correctamente")
 
-
+#TODO: Realizar la función para imprimir un elemento
 def print_data(control, id):
     """
         Función que imprime un dato dado su ID
     """
-    #TODO: Realizar la función para imprimir un elemento
-    pass
+    movie_data = logic.get_data(control, id)
+    
+    if movie_data:
+        print(f"Fecha: {movie_data[0]}")
+        print(f"Título original: {movie_data[1]}")
+        print(f"Idioma original: {movie_data[2]}")
+        print(f"Duración: {movie_data[3]}")
+        print(f"Presupuesto: {movie_data[4]}")
+        print(f"Ingresos: {movie_data[5]}")
+        print(f"Ganancias: {movie_data[6]}")
+    else:
+        print("No se encontró la película con ese ID.")
 
 def print_req_1(control):
     """
