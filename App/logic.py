@@ -77,12 +77,12 @@ def load_data(catalog, filename):
 # Funciones de consulta sobre el catálogo
 
 def get_data(movies, id):
-    fecha = lt.getElement(movies['fecha'], id) if lt.getElement(movies['fecha'], id) else "Desconocido"
-    or_title = lt.getElement(movies['or_title'], id) if lt.getElement(movies['or_title'], id) else "Desconocido"
-    idioma = lt.getElement(movies['idioma'], id) if lt.getElement(movies['idioma'], id) else "Desconocido"
-    duracion = lt.getElement(movies['duracion'], id) if lt.getElement(movies['duracion'], id) else "Desconocido"
-    presupuesto = lt.getElement(movies['presupuesto'], id)
-    ingresos = lt.getElement(movies['ingresos'], id)
+    fecha = lt.get_element(movies['fecha'], id) if lt.get_element(movies['fecha'], id) else "Desconocido"
+    or_title = lt.get_element(movies['or_title'], id) if lt.get_element(movies['or_title'], id) else "Desconocido"
+    idioma = lt.get_element(movies['idioma'], id) if lt.get_element(movies['idioma'], id) else "Desconocido"
+    duracion = lt.get_element(movies['duracion'], id) if lt.get_element(movies['duracion'], id) else "Desconocido"
+    presupuesto = lt.get_element(movies['presupuesto'], id)
+    ingresos = lt.get_element(movies['ingresos'], id)
     if presupuesto == 0:
         presupuesto = "Indefinido"
     if ingresos == 0:
@@ -100,14 +100,33 @@ def report_data(movies):
     last_five = [get_data(movies, total_movies - 4 + i) for i in range(5)]
     return total_movies, first_five, last_five
 
-def req_1(catalog):
+
+def req_1(catalog, min_duracion):
     """
     Retorna el resultado del requerimiento 1
     """
-    # TODO: Modificar el requerimiento 1
-    pass
-
-
+     # TODO: Modificar el requerimiento 1
+    total_peliculas = lt.size(catalog['duracion'])
+    peliculas_con_fecha = []
+    for i in range(0, total_peliculas):
+        duracion_str = lt.get_element(catalog['duracion'], i).strip()
+        try:
+            duracion = float(duracion_str)
+        except ValueError:
+            print(f"Advertencia: No se pudo convertir '{duracion_str}' a float.")
+            continue
+        if duracion >= min_duracion:
+            fecha = lt.get_element(catalog['fecha'], i)
+            peliculas_con_fecha.append((i, fecha))
+    peliculas_con_fecha.sort(key=lambda x: x[1], reverse=True)
+    
+    if len(peliculas_con_fecha) == 0:
+        return "No se encontraron películas que superen los minutos de duración especificados."
+    else:
+        peli_reciente_id = peliculas_con_fecha[0][0]
+        peli_reciente = get_data(catalog, peli_reciente_id)
+        return len(peliculas_con_fecha), peli_reciente
+    
 def req_2(catalog):
     """
     Retorna el resultado del requerimiento 2

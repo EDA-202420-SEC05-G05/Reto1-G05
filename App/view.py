@@ -57,7 +57,24 @@ def print_req_1(control):
         Función que imprime la solución del Requerimiento 1 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 1
-    pass
+    try:
+        min_duracion = int(input("Ingrese el tiempo mínimo de duración en minutos: "))
+        resp = logic.req_1(control, min_duracion)
+        if isinstance(resp, str):
+            print(resp)
+        else:
+            total_peliculas, peli_reciente = resp
+            print(f"Total de películas que cumplen con el criterio: {total_peliculas}")
+            print("\nÚltima película publicada que supera el tiempo mínimo:")
+            print(f"Fecha de publicación: {peli_reciente[0]}")
+            print(f"Título original: {peli_reciente[1]}")
+            print(f"Idioma original: {peli_reciente[2]}")
+            print(f"Duración: {peli_reciente[3]} minutos")
+            print(f"Presupuesto: {peli_reciente[4]}")
+            print(f"Ingresos: {peli_reciente[5]}")
+            print(f"Ganancias: {peli_reciente[6]}")
+    except ValueError:
+        print("Error: Debes ingresar un número válido para la duración mínima.")
 
 
 def print_req_2(control):
