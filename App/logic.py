@@ -2,6 +2,7 @@ import time
 from DataStructures.List import array_list as lt
 import csv
 import os
+import json
 
 
 csv.field_size_limit(2147483647)
@@ -30,28 +31,28 @@ def load_fecha(movies, filename):
     input_file = csv.DictReader(open(filename, encoding='utf-8'))
     for row in input_file:
         release_date = row['release_date'] if row['release_date'] else "Desconocido"
-        lt.addLast(movies['fecha'], release_date)
+        lt.add_last(movies['fecha'], release_date)
 
 # Función para cargar los títulos originales de las películas
 def load_title(movies, filename):
     input_file = csv.DictReader(open(filename, encoding='utf-8'))
     for row in input_file:
         or_title = row['title'] if row['title'] else "Desconocido"
-        lt.addLast(movies['or_title'], or_title)
+        lt.add_last(movies['or_title'], or_title)
 
 # Función para cargar el idioma original de las películas
 def load_idioma(movies, filename):
     input_file = csv.DictReader(open(filename, encoding='utf-8'))
     for row in input_file:
         idioma = row['original_language'] if row['original_language'] else "Desconocido"
-        lt.addLast(movies['idioma'], idioma)
+        lt.add_last(movies['idioma'], idioma)
         
 # Función para cargar la duración de las películas
 def load_duracion(movies, filename):
     input_file = csv.DictReader(open(filename, encoding='utf-8'))
     for row in input_file:
         duracion = row['runtime'] if row['runtime'] else "Desconocido"
-        lt.addLast(movies['duracion'], duracion)
+        lt.add_last(movies['duracion'], duracion)
 
 # Función para cargar el presupuesto, ingresos y calcular ganancias
 def load_financials(movies, filename):
@@ -59,9 +60,9 @@ def load_financials(movies, filename):
     for row in input_file:
         presupuesto = int(row['budget']) if row['budget'].isdigit() else 0
         ingresos = int(row['revenue']) if row['revenue'].isdigit() else 0
-        lt.addLast(movies['presupuesto'], presupuesto)
-        lt.addLast(movies['ingresos'], ingresos)
-        lt.addLast(movies['ganancias'], ingresos - presupuesto if ingresos and presupuesto else "Indefinido")
+        lt.add_last(movies['presupuesto'], presupuesto)
+        lt.add_last(movies['ingresos'], ingresos)
+        lt.add_last(movies['ganancias'], ingresos - presupuesto if ingresos and presupuesto else "Indefinido")
 
 
 def load_data(catalog, filename):

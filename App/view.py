@@ -1,4 +1,5 @@
 import sys
+import os
 import App.logic as logic
 
 
@@ -21,11 +22,16 @@ def print_menu():
     print("8- Ejecutar Requerimiento 7")
     print("9- Ejecutar Requerimiento 8 (Bono)")
     print("0- Salir")
-
+    
 def load_data(control):
-    filename = input("Ingrese el nombre el del archivo ")
-    logic.load_data(control, filename)
-    print("Datos cagados correctamente")
+    data_dir = os.path.join(os.getcwd(), "Data")
+    filename = input("Ingrese el nombre del archivo (ej. movies-large.csv): ")
+    file_path = os.path.join(data_dir, filename)
+    if os.path.isfile(file_path):
+        logic.load_data(control, file_path)
+        print("Datos cargados correctamente")
+    else:
+        print(f"El archivo {file_path} no fue encontrado. Verifique el nombre y la ubicación.")
 
 #TODO: Realizar la función para imprimir un elemento
 def print_data(control, id):
@@ -44,6 +50,7 @@ def print_data(control, id):
         print(f"Ganancias: {movie_data[6]}")
     else:
         print("No se encontró la película con ese ID.")
+        
 
 def print_req_1(control):
     """
