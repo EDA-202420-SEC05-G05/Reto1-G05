@@ -3,6 +3,7 @@ from DataStructures.List import array_list as lt
 import csv
 import os
 import json
+from datetime import datetime
 
 
 csv.field_size_limit(2147483647)
@@ -13,9 +14,9 @@ def new_logic():
     Crea el catalogo para almacenar las estructuras de datos
     """
     #TODO: Llama a las funciónes de creación de las estructuras de datos
-    movies = {"fecha": None, "or_title": None, "idioma": None, "duaracion": None
+    movies = {"fecha": None, "or_title": None, "idioma": None, "duracion": None
               , "presupuesto": None, "ingresos": None,
-              "ganancias": None}
+              "ganancias": None, "id": None, "status": None, "vote_average": None, "vote_count": None, "genero": None, "production_companies": None}
 
     movies["fecha"] = lt.new_list()
     movies["or_title"] = lt.new_list()
@@ -24,6 +25,12 @@ def new_logic():
     movies["presupuesto"] = lt.new_list()
     movies["ingresos"] = lt.new_list()
     movies["ganancias"] = lt.new_list()
+    movies["id"] = lt.new_list()
+    movies["status"] = lt.new_list()
+    movies["vote_average"] = lt.new_list()
+    movies["vote_count"] = lt.new_list()
+    movies['genero'] = lt.new_list()
+    movies['production_companies'] = lt.new_list()
     return movies
 # Funciones para la carga de datos
 
@@ -64,6 +71,42 @@ def load_financials(movies, filename):
         lt.add_last(movies['ingresos'], ingresos)
         lt.add_last(movies['ganancias'], ingresos - presupuesto if ingresos and presupuesto else "Indefinido")
 
+def load_id(movies, filename):
+    input_file = csv.DictReader(open(filename, encoding='utf-8'))
+    for row in input_file:
+        movie_id = row['id'] if row['id'] else "Desconocido"
+        lt.add_last(movies['id'], movie_id)
+
+def load_status(movies, filename):
+    input_file = csv.DictReader(open(filename, encoding='utf-8'))
+    for row in input_file:
+        status = row['status'] if row['status'] else "Desconocido"
+        lt.add_last(movies['status'], status)
+        
+def load_vote_average(movies, filename):
+    input_file = csv.DictReader(open(filename, encoding='utf-8'))
+    for row in input_file:
+        vote_average = row['vote_average'] if row['vote_average'] else 0
+        lt.add_last(movies['vote_average'], vote_average)
+        
+def load_vote_count(movies, filename):
+    input_file = csv.DictReader(open(filename, encoding='utf-8'))
+    for row in input_file:
+        vote_count = row['vote_count'] if row['vote_count'] else 0
+        lt.add_last(movies['vote_count'], vote_count)
+
+def load_genero(movies, filename):
+    input_file = csv.DictReader(open(filename, encoding='utf-8'))
+    for row in input_file:
+        genero = row['genres'] if row['genres'] else "Desconocido"
+        lt.add_last(movies['genero'], genero)
+
+def load_production_companies(movies, filename):
+    input_file = csv.DictReader(open(filename, encoding='utf-8'))
+    for row in input_file:
+        production_companies = row['production_companies'] if row['production_companies'] else "Desconocido"
+        lt.add_last(movies['production_companies'], production_companies)
+
 
 def load_data(catalog, filename):
     load_fecha(catalog, filename)
@@ -71,6 +114,13 @@ def load_data(catalog, filename):
     load_idioma(catalog, filename)
     load_duracion(catalog, filename)
     load_financials(catalog, filename)
+    load_id(catalog, filename)
+    load_status(catalog, filename)
+    load_vote_average(catalog, filename)
+    load_vote_count(catalog, filename)
+    load_genero(catalog, filename)
+    load_production_companies(catalog, filename)
+    
         
     return catalog
 
@@ -83,6 +133,14 @@ def get_data(movies, id):
     duracion = lt.get_element(movies['duracion'], id) if lt.get_element(movies['duracion'], id) else "Desconocido"
     presupuesto = lt.get_element(movies['presupuesto'], id)
     ingresos = lt.get_element(movies['ingresos'], id)
+    puntaje = lt.get_element(movies['vote_average'], id) if lt.get_element(movies['vote_average'], id) else "Desconocido"
+    status = lt.get_element(movies["status"], id) if lt.get_element(movies['vote_average'], id) else "Desconocido"
+    total_votaciones = lt.get_element(movies['vote_count'], id) if lt.get_element(movies['vote_count'], id) else "Desconocido"
+    genero = lt.get_element(movies['genero'], id) if lt.get_element(movies['genero'], id) else "Desconocido"
+    production_companies = lt.get_element(movies['production_companies'], id) if lt.get_element(movies['production_companies'], id) else "Desconocido"
+    id = lt.get_element(movies['id'], id) if lt.get_element(movies['id'], id) else "Desconocido"
+
+
     if presupuesto == 0:
         presupuesto = "Indefinido"
     if ingresos == 0:
@@ -92,7 +150,7 @@ def get_data(movies, id):
     else:
         ganancias = "Indefinido"
     
-    return [fecha, or_title, idioma, duracion, presupuesto, ingresos, ganancias]
+    return [fecha, or_title, idioma, duracion, presupuesto, ingresos, ganancias, puntaje, status, total_votaciones, genero, production_companies, id]
 
 def report_data(movies):
     total_movies = lt.size(movies['fecha'])
@@ -144,14 +202,56 @@ def req_2(movies,idioma_buscado):
         raise IndexError("No se encontraron películas en el idioma:" + str(idioma_buscado))
     return buscadas,ultima_pelicula
 
-
-def req_3(catalog):
+def req_3(catalog, idioma, fecha_inicio, fecha_final):
     """
     Retorna el resultado del requerimiento 3
     """
     # TODO: Modificar el requerimiento 3
-    pass
+    total_peliculas = lt.size(catalog['fecha'])
+    peliculas_filtradas = []
+    duracion_total = 0
+    formato_fecha = "%Y-%m-%d"
 
+    for i in range(0, total_peliculas):
+        fecha = lt.get_element(catalog['fecha'], i)
+        idioma_pelicula = lt.get_element(catalog['idioma'], i)
+        if idioma_pelicula == idioma:
+            try:
+                fecha_pelicula = datetime.strptime(fecha, formato_fecha)
+                fecha_inicio_dt = datetime.strptime(fecha_inicio, formato_fecha)
+                fecha_final_dt = datetime.strptime(fecha_final, formato_fecha)
+
+                if fecha_inicio_dt <= fecha_pelicula <= fecha_final_dt:
+                    pelicula_data = get_data(catalog, i)
+                
+                    pelicula_filtrada = [
+                        pelicula_data[0],  
+                        pelicula_data[1],  
+                        pelicula_data[4],  
+                        pelicula_data[5],  
+                        pelicula_data[6],  
+                        pelicula_data[3],  #duracion
+                        pelicula_data[7],  
+                        pelicula_data[8]   
+                    ]
+                    try: 
+                        duracion_total += float(pelicula_data[3])
+                    except ValueError:
+                        continue
+                    peliculas_filtradas.append(pelicula_filtrada)
+                    duracion_total += int(pelicula_data[3]) if pelicula_data[3].isdigit() else 0
+            except ValueError:
+                continue
+    total_filtradas = len(peliculas_filtradas)
+    
+    
+    
+    if total_filtradas == 0:
+        return "No se encontraron películas para el idioma y las fechas especificadas."
+    duracion_promedio = duracion_total / total_filtradas if total_filtradas > 0 else 0
+    if total_filtradas > 20:
+        peliculas_filtradas = peliculas_filtradas[:5] + peliculas_filtradas[-5:]
+    return total_filtradas, duracion_promedio, peliculas_filtradas
 
 def req_4(catalog):
     """

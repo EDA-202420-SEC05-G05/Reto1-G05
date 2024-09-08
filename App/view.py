@@ -102,7 +102,14 @@ def print_req_3(control):
         Función que imprime la solución del Requerimiento 3 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 3
-    pass
+    idioma = input("Ingrese el idioma original de publicación (ej.: en, fr, zh): ")
+    fecha_inicio = input("Ingrese la fecha inicial del periodo a consultar (formato YYYY-MM-DD): ")
+    fecha_final = input("Ingrese la fecha final del periodo a consultar (formato YYYY-MM-DD): ")
+    try:
+        resp = logic.req_3(control, idioma, fecha_inicio, fecha_final)
+        print(resp)
+    except ValueError:
+        print("Error: Formato de fecha incorrecto.")
 
 
 def print_req_4(control):
