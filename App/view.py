@@ -82,7 +82,19 @@ def print_req_2(control):
         Función que imprime la solución del Requerimiento 2 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 2
-    pass
+    idioma = input("Ingrese el idioma original en el que desea conocer la última película publicada: ")
+    try:
+        buscadas, ultima_pelicula = logic.req_2(control, idioma)
+        print("Número de películas con ese idioma original: " + str(buscadas))
+        print("Fecha de publicación de la última película: " + str(ultima_pelicula[0]))
+        print("Título original de la última película: " + str(ultima_pelicula[1]))
+        print("Presupuesto de la última película: " + str(ultima_pelicula[4]))
+        print("Dinero recaudado de la última película: " + str(ultima_pelicula[5]))
+        print("Ganancia final de la última película: " + str(ultima_pelicula[6]))
+        print("Duración en minutos de la última película: " + str(ultima_pelicula[3]))
+    
+    except IndexError as e:
+        print(e)
 
 
 def print_req_3(control):

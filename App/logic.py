@@ -127,12 +127,22 @@ def req_1(catalog, min_duracion):
         peli_reciente = get_data(catalog, peli_reciente_id)
         return len(peliculas_con_fecha), peli_reciente
     
-def req_2(catalog):
+def req_2(movies,idioma_buscado):
     """
     Retorna el resultado del requerimiento 2
     """
     # TODO: Modificar el requerimiento 2
-    pass
+    buscadas = 0
+    ultima_pelicula = None
+    total_peliculas = lt.size(movies['fecha'])
+    for i in range(1, total_peliculas + 1):
+        idioma_pelicula = lt.get_element(movies['idioma'], i)
+        if idioma_pelicula == idioma_buscado:
+            buscadas += 1
+            ultima_pelicula = get_data(movies, i)
+    if buscadas == 0:
+        raise IndexError("No se encontraron películas en el idioma:" + str(idioma_buscado))
+    return buscadas,ultima_pelicula
 
 
 def req_3(catalog):
