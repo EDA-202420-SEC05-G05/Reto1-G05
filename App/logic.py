@@ -253,13 +253,57 @@ def req_3(catalog, idioma, fecha_inicio, fecha_final):
         peliculas_filtradas = peliculas_filtradas[:5] + peliculas_filtradas[-5:]
     return total_filtradas, duracion_promedio, peliculas_filtradas
 
-def req_4(catalog):
+def req_4(catalog,status_bs,f_inicial,f_final):
     """
     Retorna el resultado del requerimiento 4
     """
     # TODO: Modificar el requerimiento 4
-    pass
-
+    pelis_bs = []
+    formato_fecha = "%Y-%m-%d"
+    total_peliculas = lt.size(catalog['fecha'])
+    fecha_inicio_dt = datetime.strptime(f_inicial, formato_fecha)
+    fecha_final_dt = datetime.strptime(f_final, formato_fecha)
+    duracion_total = 0
+    peliculas_contadas = 0
+    for i in range(0, total_peliculas):
+        fecha = lt.get_element(catalog['fecha'], i)
+        status = lt.get_element(catalog['status'], i)
+        fecha_pelicula = datetime.strptime(fecha, formato_fecha)
+        if status == status_bs and fecha_inicio_dt <= fecha_pelicula <= fecha_final_dt:
+            pelicula_data = get_data(catalog, i)
+            fecha_publicacion = pelicula_data[0]
+            titulo_original = pelicula_data[1]
+            presupuesto = pelicula_data[4]
+            ingresos = pelicula_data[5]
+            ganancias = pelicula_data[6]
+            duracion = pelicula_data[3]
+            puntaje = pelicula_data[7]
+            idioma = pelicula_data[2]
+            try:
+                duracion_int = int(duracion) if duracion.isdigit() else 0
+            except:
+                duracion_int = 0
+            duracion_total += duracion_int
+            peliculas_contadas += 1
+            pelis_bs.append({
+                "Fecha de publicación": fecha_publicacion,
+                "Título original": titulo_original,
+                "Presupuesto": presupuesto,
+                "Ingresos": ingresos,
+                "Ganancia": ganancias,
+                "Duración": duracion,
+                "Puntaje de calificación": puntaje,
+                "Idioma original": idioma
+            })
+        if peliculas_contadas > 0:
+            promedio_duracion = duracion_total / peliculas_contadas
+        else:
+            promedio_duracion = 0
+        resultado = {
+        "Número total de películas": peliculas_contadas,
+        "Tiempo promedio de duración": promedio_duracion,
+        "Películas": pelis_bs}
+    return resultado
 
 def req_5(catalog):
     """

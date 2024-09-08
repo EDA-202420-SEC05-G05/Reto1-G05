@@ -92,7 +92,8 @@ def print_req_2(control):
         print("Dinero recaudado de la última película: " + str(ultima_pelicula[5]))
         print("Ganancia final de la última película: " + str(ultima_pelicula[6]))
         print("Duración en minutos de la última película: " + str(ultima_pelicula[3]))
-    
+        print("Puntaje de calificación de la película: " + str(ultima_pelicula[7]))
+        print("Número de votos de la película: " + str(ultima_pelicula[8]))
     except IndexError as e:
         print(e)
 
@@ -117,7 +118,32 @@ def print_req_4(control):
         Función que imprime la solución del Requerimiento 4 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 4
-    pass
+    status_bs = input("Ingrese el estado de producción (ej.: 'Released', 'Rumored', etc.): ")
+    f_inicial = input("Ingrese la fecha inicial del periodo a consultar (formato: YYYY-MM-DD): ")
+    f_final = input("Ingrese la fecha final del periodo a consultar (formato: YYYY-MM-DD): ")
+    try:
+        resultado = logic.req_4(control, status_bs, f_inicial, f_final)
+        print("\nNúmero total de películas con el estado '{}' entre {} y {}: {}".format(
+            status_bs, f_inicial, f_final, resultado["Número total de películas"]))
+        print("Tiempo promedio de duración de las películas: {:.2f} minutos\n".format(
+            resultado["Tiempo promedio de duración"]))
+        # Imprimir los detalles de las películas
+        print("Listado de películas que cumplen con los criterios de búsqueda:")
+        for pelicula in resultado["Películas"]:
+            print("------------------------------------")
+            print("Fecha de publicación: " + pelicula["Fecha de publicación"])
+            print("Título original: " + pelicula["Título original"])
+            print("Presupuesto: " + str(pelicula["Presupuesto"]))
+            print("Ingresos: " + str(pelicula["Ingresos"]))
+            print("Ganancia: " + str(pelicula["Ganancia"]))
+            print("Duración: " + str(pelicula["Duración"]) + " minutos")
+            print("Puntaje de calificación: " + str(pelicula["Puntaje de calificación"]))
+            print("Idioma original: " + pelicula["Idioma original"])
+        # Si la lista de películas excede 20 elementos, mostrar un mensaje
+        if len(resultado["Películas"]) > 20:
+            print("\nNota: La lista de películas excede 20 elementos. Se han mostrado solo los primeros 20.")
+    except Exception as e:
+        print(f"Error al procesar el requerimiento: {e}")
 
 
 def print_req_5(control):
