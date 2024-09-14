@@ -151,7 +151,34 @@ def print_req_5(control):
         Función que imprime la solución del Requerimiento 5 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 5
-    pass
+    fecha_inicial = input("Ingrese la fecha inicial del periodo a consultar (formato: YYYY-MM-DD): ")
+    fecha_final = input("Ingrese la fecha final del periodo a consultar (formato: YYYY-MM-DD): ")
+    limite_inferior = input("Ingrese el limite inferior")
+    limite_superior = input("Ingrese el limite superior")
+    try:
+        rta = logic.req_5(control, limite_inferior, limite_superior, fecha_inicial, fecha_final)
+        print(f"numero total de peliculas entre {limite_inferior}, {limite_superior}")
+        print(f"Número total de películas con duración entre {limite_inferior} y {limite_superior} minutos: {rta['numero total de peliculas']}")
+        print(f"Tiempo promedio de duración: {rta['tiempo promedio de duracion']:.2f} minutos\n")
+
+        # Imprimir los detalles de las películas
+        print("Listado de películas que cumplen con los criterios de busqueda:")
+        for pelicula in rta["peliculas"]:
+            print(f"fecha de publicacion: {pelicula['fecha de publicacion']}")
+            print(f"titulo original: {pelicula['titulo_original']}")
+            print(f"presupuesto: {pelicula['presupuesto']}")
+            print(f"ingresos: {pelicula['ingresos']}")
+            print(f"ganancia: {pelicula['ganancia']}")
+            print(f"duración: {pelicula['duracion']} minutos")
+            print(f"puntaje de calificación: {pelicula['puntaje de calificacion']}")
+            print(f"idioma original: {pelicula['idioma original']}")
+        
+        # Si la lista de películas excede 20 elementos
+        if len(rta["Películas"]) > 20:
+            print("\nNota: La lista de películas excede 20 elementos. Se han mostrado solo las primeras 5 y las últimas 5.")
+    except Exception as e:
+        print(f"Error al procesar el requerimiento: {e}")
+
 
 
 def print_req_6(control):
@@ -159,7 +186,8 @@ def print_req_6(control):
         Función que imprime la solución del Requerimiento 6 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 6
-    pass
+    año_inicial_consulta = input("Año donde se quire empezar la busqueda")
+    año_final_consulta = input("Año donde quiere terminar la busqueda")
 
 
 def print_req_7(control):

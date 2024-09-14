@@ -305,19 +305,103 @@ def req_4(catalog,status_bs,f_inicial,f_final):
         "Películas": pelis_bs}
     return resultado
 
-def req_5(catalog):
+def req_5(catalog, limite_inferior, limite_superior, fecha_inicial, fecha_final):
     """
     Retorna el resultado del requerimiento 5
     """
-    # TODO: Modificar el requerimiento 5
-    pass
+    # TODO: Modificar el requerimiento 5 
+    pelis_filtradas = []
+    formato_fecha = "%Y-%m-%d"
+    total_peliculas = lt.size(catalog['fecha'])
+    fecha_inicio = datetime.strptime(fecha_inicial, formato_fecha)
+    fecha_final = datetime.strptime(fecha_final, formato_fecha)
+    duracion_total = 0
+    peliculas_contadas = 0
 
-def req_6(catalog):
+    for i in range(1, total_peliculas + 1):
+        fecha = lt.get_element(catalog['fecha'], i)
+        duracion = lt.get_element(catalog['duracion'], i)
+        fecha_pelicula = datetime.strptime(fecha, formato_fecha)
+
+        # Filtrar por fecha y limite inferior y superior 
+        if fecha_inicio <= fecha_pelicula <= fecha_final and duracion.isdigit():
+            duracion_int = int(duracion)
+            if limite_inferior <= duracion_int <= limite_superior:
+                pelicula_data = get_data(catalog, i)
+                fecha_publicacion = pelicula_data[0]
+                titulo_original = pelicula_data[1]
+                presupuesto = pelicula_data[4]
+                ingresos = pelicula_data[5]
+                ganancias = pelicula_data[6]
+                puntaje = pelicula_data[7]
+                idioma = pelicula_data[2]
+
+                duracion_total += duracion_int
+                peliculas_contadas += 1
+
+                # Guardar los datos de la película filtrada
+                pelis_filtradas.append({
+                    "fecha de publicacion": fecha_publicacion,
+                    "titulo original": titulo_original,
+                    "presupuesto": presupuesto,
+                    "ingresos": ingresos,
+                    "ganancia": ganancias,
+                    "duración": duracion,
+                    "puntaje de calificacion": puntaje,
+                    "idioma original": idioma
+                })
+
+    # Calcular el tiempo promedio de duración
+    promedio_duracion = duracion_total / peliculas_contadas if peliculas_contadas > 0 else 0
+
+    # Mostrar primeras 5 y últimas 5 si hay más de 20 películas
+    peliculas_mostradas = pelis_filtradas
+    if peliculas_contadas > 20:
+        peliculas_mostradas = pelis_filtradas[:5] + pelis_filtradas[-5:]
+
+    resultado = {
+        "numero total de peliculas": peliculas_contadas,
+        "tiempo promedio de duracion": promedio_duracion,
+        "peliculas": peliculas_mostradas
+    }
+    
+    return resultado
+
+
+
+def req_6(catalog , idioma_original, año_incial_consul, año_final_consul):
     """
     Retorna el resultado del requerimiento 6
     """
     # TODO: Modificar el requerimiento 6
-    pass
+    formato_año = "%Y"
+    año_final_consulta =  datetime.strptime(año_final_consul, formato_año).year
+    año_inicial_consulta =  datetime.strptime(año_incial_consul, formato_año).year
+    ganancias_acumuladas = 0 
+    prom_votacion = 0
+    total_peliculas_idioma = 0 
+    duracion_total = 0  
+    
+    for i in len(catalog["fecha"]): 
+        fecha_publicacion = datetime.strptime(pelicula_data[0], "%Y-%m-%d").year
+        if  año_inicial_consulta <= fecha_publicacion <= año_final_consulta: 
+            if catalog["idioma"] == idioma_original:
+                duracion = int(catalog["duracion"])
+                total_peliculas_idioma += 1  
+                pelicula_data = get_data(catalog, i)
+                titulo_original = pelicula_data[1]
+                presupuesto = pelicula_data[4]
+                ingresos = pelicula_data[5]
+                ganancias = pelicula_data[6] 
+                promedio_votacion_data = pelicula_data[9]
+
+                prom_votacion += promedio_votacion_data 
+                
+                
+                duracion_total += duracion
+                tiempo_prom = duracion/total_peliculas_idioma 
+                
+                ganancias_acumuladas = ganancias
 
 
 def req_7(catalog):
