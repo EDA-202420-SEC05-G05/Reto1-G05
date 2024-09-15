@@ -258,7 +258,7 @@ def req_4(catalog,status_bs,f_inicial,f_final):
     Retorna el resultado del requerimiento 4
     """
     # TODO: Modificar el requerimiento 4
-    pelis_bs = []
+    pelis_bs = lt.new_list()
     formato_fecha = "%Y-%m-%d"
     total_peliculas = lt.size(catalog['fecha'])
     fecha_inicio_dt = datetime.strptime(f_inicial, formato_fecha)
@@ -273,19 +273,26 @@ def req_4(catalog,status_bs,f_inicial,f_final):
             pelicula_data = get_data(catalog, i)
             fecha_publicacion = pelicula_data[0]
             titulo_original = pelicula_data[1]
-            presupuesto = pelicula_data[4]
-            ingresos = pelicula_data[5]
+            presupuesto = pelicula_data[4] if pelicula_data[4] != "" else "Indefinido"
+            ingresos = pelicula_data[5] if pelicula_data[4] != "" else "Indefinido"
             ganancias = pelicula_data[6]
             duracion = pelicula_data[3]
             puntaje = pelicula_data[7]
             idioma = pelicula_data[2]
+            if presupuesto != "Indefinido" and ingresos != "Indefinido":
+                try:
+                    ganancias = float(ingresos) - float(presupuesto)
+                except:
+                    ganancias = "Indefinido"
+            else:
+                ganancias = "Indefinido"
             try:
                 duracion_int = int(duracion) if duracion.isdigit() else 0
             except:
                 duracion_int = 0
             duracion_total += duracion_int
             peliculas_contadas += 1
-            pelis_bs.append({
+            lt.add_last(pelis_bs,{
                 "Fecha de publicación": fecha_publicacion,
                 "Título original": titulo_original,
                 "Presupuesto": presupuesto,
@@ -299,6 +306,13 @@ def req_4(catalog,status_bs,f_inicial,f_final):
             promedio_duracion = duracion_total / peliculas_contadas
         else:
             promedio_duracion = 0
+        if lt.size(pelis_bs) >= 20:
+            pelis_bs_extra = lt.new_list()
+            for i in range(1, 6):
+                lt.add_last(pelis_bs_extra, lt.get_element(pelis_bs, i))
+            for i in range(lt.size(pelis_bs) - 4, lt.size(pelis_bs) + 1):
+                lt.add_last(pelis_bs_extra, lt.get_element(pelis_bs, i))
+            pelis_bs = pelis_bs_extra
         resultado = {
         "Número total de películas": peliculas_contadas,
         "Tiempo promedio de duración": promedio_duracion,
@@ -322,12 +336,11 @@ def req_5(catalog, limite_inferior, limite_superior, fecha_inicial, fecha_final)
         fecha = lt.get_element(catalog['fecha'], i)
         duracion = lt.get_element(catalog['duracion'], i)
         fecha_pelicula = datetime.strptime(fecha, formato_fecha)
-
         # Filtrar por fecha y limite inferior y superior 
-        if fecha_inicio <= fecha_pelicula <= fecha_final and duracion.isdigit():
-            duracion_int = int(duracion)
-            if limite_inferior <= duracion_int <= limite_superior:
-                pelicula_data = get_data(catalog, i)
+        if fecha_inicio <= fecha_pelicula <= fecha_final:
+            duracion = int(duracion)
+            if limite_inferior <= duracion <= limite_superior:
+                pelicula_data = lt.get_data(catalog, i)
                 fecha_publicacion = pelicula_data[0]
                 titulo_original = pelicula_data[1]
                 presupuesto = pelicula_data[4]
@@ -335,10 +348,8 @@ def req_5(catalog, limite_inferior, limite_superior, fecha_inicial, fecha_final)
                 ganancias = pelicula_data[6]
                 puntaje = pelicula_data[7]
                 idioma = pelicula_data[2]
-
-                duracion_total += duracion_int
+                duracion_total += duracion
                 peliculas_contadas += 1
-
                 # Guardar los datos de la película filtrada
                 pelis_filtradas.append({
                     "fecha de publicacion": fecha_publicacion,
@@ -350,14 +361,12 @@ def req_5(catalog, limite_inferior, limite_superior, fecha_inicial, fecha_final)
                     "puntaje de calificacion": puntaje,
                     "idioma original": idioma
                 })
-
-    # Calcular el tiempo promedio de duración
-    promedio_duracion = duracion_total / peliculas_contadas if peliculas_contadas > 0 else 0
-
-    # Mostrar primeras 5 y últimas 5 si hay más de 20 películas
+    # Calcular el tiempo promedio de duracion
+    promedio_duracion = duracion_total / peliculas_contadas
+    # Mostrar primeras 5 y ultimas 5 
     peliculas_mostradas = pelis_filtradas
-    if peliculas_contadas > 20:
-        peliculas_mostradas = pelis_filtradas[:5] + pelis_filtradas[-5:]
+    if peliculas_contadas >= 20:
+        peliculas_mostradas = lt.get_element(pelis_filtradas,5) + lt.get_element(pelis_filtradas,5)
 
     resultado = {
         "numero total de peliculas": peliculas_contadas,

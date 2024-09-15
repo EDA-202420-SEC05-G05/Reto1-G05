@@ -127,6 +127,9 @@ def print_req_4(control):
             status_bs, f_inicial, f_final, resultado["Número total de películas"]))
         print("Tiempo promedio de duración de las películas: {:.2f} minutos\n".format(
             resultado["Tiempo promedio de duración"]))
+        num_peliculas = len(resultado["Películas"])
+        if num_peliculas > 20:
+            print("Mostrando las primeras 5 y las últimas 5 películas, ya que hay más de 20 en total:")
         # Imprimir los detalles de las películas
         print("Listado de películas que cumplen con los criterios de búsqueda:")
         for pelicula in resultado["Películas"]:
@@ -139,9 +142,6 @@ def print_req_4(control):
             print("Duración: " + str(pelicula["Duración"]) + " minutos")
             print("Puntaje de calificación: " + str(pelicula["Puntaje de calificación"]))
             print("Idioma original: " + pelicula["Idioma original"])
-        # Si la lista de películas excede 20 elementos, mostrar un mensaje
-        if len(resultado["Películas"]) > 20:
-            print("\nNota: La lista de películas excede 20 elementos. Se han mostrado solo los primeros 20.")
     except Exception as e:
         print(f"Error al procesar el requerimiento: {e}")
 
