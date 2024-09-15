@@ -265,20 +265,17 @@ def req_4(catalog,status_bs,f_inicial,f_final):
     fecha_final_dt = datetime.strptime(f_final, formato_fecha)
     duracion_total = 0
     peliculas_contadas = 0
-    for i in range(0, total_peliculas):
+    for i in range(1, total_peliculas+1):
         fecha = lt.get_element(catalog['fecha'], i)
         status = lt.get_element(catalog['status'], i)
         fecha_pelicula = datetime.strptime(fecha, formato_fecha)
         if status == status_bs and fecha_inicio_dt <= fecha_pelicula <= fecha_final_dt:
-            pelicula_data = get_data(catalog, i)
-            fecha_publicacion = pelicula_data[0]
-            titulo_original = pelicula_data[1]
-            presupuesto = pelicula_data[4] if pelicula_data[4] != "" else "Indefinido"
-            ingresos = pelicula_data[5] if pelicula_data[4] != "" else "Indefinido"
-            ganancias = pelicula_data[6]
-            duracion = pelicula_data[3]
-            puntaje = pelicula_data[7]
-            idioma = pelicula_data[2]
+            titulo_original = lt.getElement(catalog['or_title'], i)
+            idioma = lt.getElement(catalog['idioma'], i)
+            duracion = lt.getElement(catalog['duracion'], i)
+            presupuesto = lt.getElement(catalog['presupuesto'], i) if lt.getElement(catalog['presupuesto'], i) != "" else "Indefinido"
+            ingresos = lt.getElement(catalog['ingresos'], i) if lt.getElement(catalog['ingresos'], i) != "" else "Indefinido"
+            puntaje = lt.getElement(catalog['vote_average'], i)
             if presupuesto != "Indefinido" and ingresos != "Indefinido":
                 try:
                     ganancias = float(ingresos) - float(presupuesto)
@@ -293,12 +290,12 @@ def req_4(catalog,status_bs,f_inicial,f_final):
             duracion_total += duracion_int
             peliculas_contadas += 1
             lt.add_last(pelis_bs,{
-                "Fecha de publicación": fecha_publicacion,
+                "Fecha de publicación": fecha,
                 "Título original": titulo_original,
                 "Presupuesto": presupuesto,
                 "Ingresos": ingresos,
                 "Ganancia": ganancias,
-                "Duración": duracion,
+                "Duración": duracion_int,
                 "Puntaje de calificación": puntaje,
                 "Idioma original": idioma
             })
