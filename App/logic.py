@@ -270,19 +270,13 @@ def req_4(catalog,status_bs,f_inicial,f_final):
         status = lt.get_element(catalog['status'], i)
         fecha_pelicula = datetime.strptime(fecha, formato_fecha)
         if status == status_bs and fecha_inicio_dt <= fecha_pelicula <= fecha_final_dt:
-            titulo_original = lt.getElement(catalog['or_title'], i)
-            idioma = lt.getElement(catalog['idioma'], i)
-            duracion = lt.getElement(catalog['duracion'], i)
-            presupuesto = lt.getElement(catalog['presupuesto'], i) if lt.getElement(catalog['presupuesto'], i) != "" else "Indefinido"
-            ingresos = lt.getElement(catalog['ingresos'], i) if lt.getElement(catalog['ingresos'], i) != "" else "Indefinido"
-            puntaje = lt.getElement(catalog['vote_average'], i)
-            if presupuesto != "Indefinido" and ingresos != "Indefinido":
-                try:
-                    ganancias = float(ingresos) - float(presupuesto)
-                except:
-                    ganancias = "Indefinido"
-            else:
-                ganancias = "Indefinido"
+            titulo_original = lt.get_element(catalog['or_title'], i)
+            idioma = lt.get_element(catalog['idioma'], i)
+            duracion = lt.get_element(catalog['duracion'], i)
+            presupuesto = lt.get_element(catalog['presupuesto'], i) 
+            ingresos = lt.get_element(catalog['ingresos'], i) 
+            puntaje = lt.get_element(catalog['vote_average'], i)
+            ganancias = lt.get_element(catalog['ganancias'], i)
             try:
                 duracion_int = int(duracion) if duracion.isdigit() else 0
             except:
@@ -418,12 +412,73 @@ def req_7(catalog):
     pass
 
 
-def req_8(catalog):
+def req_8(catalog,consulta,genero):
     """
     Retorna el resultado del requerimiento 8
     """
     # TODO: Modificar el requerimiento 8
-    pass
+    formato_fecha = "%Y-%m-%d"
+    pelis_bs = lt.new_list()
+    total_votos = 0
+    total_duracion = 0
+    total_ganancias = 0
+    pelis_filtradas = 0
+    mejor_pelicula = None
+    peor_pelicula = None
+    mejor_puntaje = -float('inf')
+    peor_puntaje = float('inf')
+
+    total_peliculas = lt.size(catalog['fecha'])
+
+    for i in range(1, total_peliculas + 1):
+        fecha = lt.get_element(catalog['fecha'], i)
+        genero_gn = lt.get_element(catalog["genero"], i)
+        estado = lt.get_element(catalog["status"], i)
+        puntaje = lt.get_element(catalog["vote_average"], i)
+        duracion = lt.get_element(catalog["duracion"], i)
+        presupuesto = lt.get_element(catalog["presupuesto"], i)
+        ingresos = lt.get_element(catalog["ingresos"], i)
+        año_pelicula = datetime.strptime(fecha, formato_fecha).year
+        if año_pelicula == consulta and genero in genero_gn and estado == "Released":
+            pelis_filtradas += 1
+            total_votos += float(puntaje) if puntaje else 0
+            total_duracion += int(duracion) if duracion else 0
+            if presupuesto and ingresos:
+                try:
+                    ganancias = float(ingresos) - float(presupuesto)
+                except ValueError:
+                    ganancias = 0
+            else:
+                ganancias = 0
+            total_ganancias += ganancias
+            if float(puntaje) > mejor_puntaje:
+                mejor_puntaje = float(puntaje)
+                mejor_pelicula = lt.get_element(catalog['or_title'], i)
+
+            if float(puntaje) < peor_puntaje:
+                peor_puntaje = float(puntaje)
+                peor_pelicula = lt.get_element(catalog['or_title'], i)
+
+    # Calculo de promedios
+    promedio_votos = total_votos / pelis_filtradas if pelis_filtradas > 0 else 0
+    promedio_duracion = total_duracion / pelis_filtradas if pelis_filtradas > 0 else 0
+
+    resultado = {
+        "Total de películas publicadas": pelis_filtradas,
+        "Promedio de votación": promedio_votos,
+        "Tiempo promedio de duración": promedio_duracion,
+        "Ganancias acumuladas": total_ganancias,
+        "Mejor película": {
+            "Nombre": mejor_pelicula,
+            "Puntaje": mejor_puntaje
+        },
+        "Peor película": {
+            "Nombre": peor_pelicula,
+            "Puntaje": peor_puntaje
+        }
+    }
+
+    return resultado
 
 
 # Funciones para medir tiempos de ejecucion

@@ -203,7 +203,28 @@ def print_req_8(control):
         Función que imprime la solución del Requerimiento 8 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 8
-    pass
+    anio_consulta = input("Ingrese el año de consulta (formato: YYYY): ")
+    genero_consulta = input("Ingrese el género de las películas (ej.: 'Action', 'Comedy', etc.): ")
+    try:
+        resultado = logic.req_8(control, int(anio_consulta), genero_consulta)
+        print("\nTotal de películas publicadas en el año {} de género '{}': {}".format(
+            anio_consulta, genero_consulta, resultado["Total de películas publicadas"]))
+        print("Promedio de votación de las películas: {:.2f}".format(
+            resultado["Promedio de votación"]))
+        print("Tiempo promedio de duración: {:.2f} minutos".format(
+            resultado["Tiempo promedio de duración"]))
+        print("Ganancias acumuladas: {}".format(
+            resultado["Ganancias acumuladas"]))
+        print("\nMejor película del año {} en el género '{}':".format(anio_consulta, genero_consulta))
+        print("Nombre: " + resultado["Mejor película"]["Nombre"])
+        print("Puntaje: {:.2f}".format(resultado["Mejor película"]["Puntaje"]))
+        print("\nPeor película del año {} en el género '{}':".format(anio_consulta, genero_consulta))
+        print("Nombre: " + resultado["Peor película"]["Nombre"])
+        print("Puntaje: {:.2f}".format(resultado["Peor película"]["Puntaje"]))
+
+    except Exception as e:
+        print(f"Error al procesar el requerimiento: {e}")
+
 
 
 # Se crea la lógica asociado a la vista
