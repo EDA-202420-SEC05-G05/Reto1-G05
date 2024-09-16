@@ -127,6 +127,9 @@ def print_req_4(control):
             status_bs, f_inicial, f_final, resultado["Número total de películas"]))
         print("Tiempo promedio de duración de las películas: {:.2f} minutos\n".format(
             resultado["Tiempo promedio de duración"]))
+        num_peliculas = len(resultado["Películas"])
+        if num_peliculas > 20:
+            print("Mostrando las primeras 5 y las últimas 5 películas, ya que hay más de 20 en total:")
         # Imprimir los detalles de las películas
         print("Listado de películas que cumplen con los criterios de búsqueda:")
         for pelicula in resultado["Películas"]:
@@ -139,9 +142,6 @@ def print_req_4(control):
             print("Duración: " + str(pelicula["Duración"]) + " minutos")
             print("Puntaje de calificación: " + str(pelicula["Puntaje de calificación"]))
             print("Idioma original: " + pelicula["Idioma original"])
-        # Si la lista de películas excede 20 elementos, mostrar un mensaje
-        if len(resultado["Películas"]) > 20:
-            print("\nNota: La lista de películas excede 20 elementos. Se han mostrado solo los primeros 20.")
     except Exception as e:
         print(f"Error al procesar el requerimiento: {e}")
 
@@ -188,14 +188,24 @@ def print_req_6(control):
     # TODO: Imprimir el resultado del requerimiento 6
     año_inicial_consulta = input("Año donde se quire empezar la busqueda")
     año_final_consulta = input("Año donde quiere terminar la busqueda")
-
+    
 
 def print_req_7(control):
     """
         Función que imprime la solución del Requerimiento 7 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 7
-    pass
+    compania = input("Ingrese el nombre de compañía productora. (ej. “Nilsen Premiere”) ")
+    anio_inicio = input("Ingrese el año inicial del periodo a consultar (con formato YYYY) ")
+    anio_final = input("Ingrese el año final del periodo a consultar (con formato YYYY) ")
+    try:
+        resp = logic.req_7(control, compania, anio_inicio, anio_final)
+        print(resp)
+    except ValueError:
+        print("Error: el nombre de la compañia productora o los años ingresados son incorrectos.")
+   
+
+        
 
 
 def print_req_8(control):
@@ -203,7 +213,28 @@ def print_req_8(control):
         Función que imprime la solución del Requerimiento 8 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 8
-    pass
+    anio_consulta = input("Ingrese el año de consulta (formato: YYYY): ")
+    genero_consulta = input("Ingrese el género de las películas (ej.: 'Action', 'Comedy', etc.): ")
+    try:
+        resultado = logic.req_8(control, int(anio_consulta), genero_consulta)
+        print("\nTotal de películas publicadas en el año {} de género '{}': {}".format(
+            anio_consulta, genero_consulta, resultado["Total de películas publicadas"]))
+        print("Promedio de votación de las películas: {:.2f}".format(
+            resultado["Promedio de votación"]))
+        print("Tiempo promedio de duración: {:.2f} minutos".format(
+            resultado["Tiempo promedio de duración"]))
+        print("Ganancias acumuladas: {}".format(
+            resultado["Ganancias acumuladas"]))
+        print("\nMejor película del año {} en el género '{}':".format(anio_consulta, genero_consulta))
+        print("Nombre: " + resultado["Mejor película"]["Nombre"])
+        print("Puntaje: {:.2f}".format(resultado["Mejor película"]["Puntaje"]))
+        print("\nPeor película del año {} en el género '{}':".format(anio_consulta, genero_consulta))
+        print("Nombre: " + resultado["Peor película"]["Nombre"])
+        print("Puntaje: {:.2f}".format(resultado["Peor película"]["Puntaje"]))
+
+    except Exception as e:
+        print(f"Error al procesar el requerimiento: {e}")
+
 
 
 # Se crea la lógica asociado a la vista
