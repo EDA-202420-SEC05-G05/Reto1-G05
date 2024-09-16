@@ -148,37 +148,48 @@ def print_req_4(control):
 
 def print_req_5(control):
     """
-        Función que imprime la solución del Requerimiento 5 en consola
+    Función que imprime la solución del Requerimiento 5 en consola.
     """
-    # TODO: Imprimir el resultado del requerimiento 5
+    # Obtener entradas del usuario
     fecha_inicial = input("Ingrese la fecha inicial del periodo a consultar (formato: YYYY-MM-DD): ")
     fecha_final = input("Ingrese la fecha final del periodo a consultar (formato: YYYY-MM-DD): ")
-    limite_inferior = input("Ingrese el limite inferior")
-    limite_superior = input("Ingrese el limite superior")
+    
+    # Convertir límites inferiores y superiores a enteros
     try:
-        rta = logic.req_5(control, limite_inferior, limite_superior, fecha_inicial, fecha_final)
-        print(f"numero total de peliculas entre {limite_inferior}, {limite_superior}")
+        limite_inferior = int(input("Ingrese el limite inferior (en minutos): "))
+        limite_superior = int(input("Ingrese el limite superior (en minutos): "))
+    except ValueError:
+        print("Error: Los límites deben ser números enteros.")
+        return
+    # Llamar a la función req_5 y manejar posibles errores
+    try:
+        rta = logic.req_5(control, fecha_inicial, fecha_final, limite_inferior, limite_superior)
+        
         print(f"Número total de películas con duración entre {limite_inferior} y {limite_superior} minutos: {rta['numero total de peliculas']}")
         print(f"Tiempo promedio de duración: {rta['tiempo promedio de duracion']:.2f} minutos\n")
 
         # Imprimir los detalles de las películas
-        print("Listado de películas que cumplen con los criterios de busqueda:")
-        for pelicula in rta["peliculas"]:
-            print(f"fecha de publicacion: {pelicula['fecha de publicacion']}")
-            print(f"titulo original: {pelicula['titulo_original']}")
-            print(f"presupuesto: {pelicula['presupuesto']}")
-            print(f"ingresos: {pelicula['ingresos']}")
-            print(f"ganancia: {pelicula['ganancia']}")
-            print(f"duración: {pelicula['duracion']} minutos")
-            print(f"puntaje de calificación: {pelicula['puntaje de calificacion']}")
-            print(f"idioma original: {pelicula['idioma original']}")
+        print("Listado de películas que cumplen con los criterios de búsqueda:")
+        peliculas = rta["peliculas"]
         
-        # Si la lista de películas excede 20 elementos
-        if len(rta["Películas"]) > 20:
+        # Mostrar solo las primeras 5 y últimas 5 si hay más de 20
+        if len(peliculas) > 20:
+            peliculas = peliculas[:5] + peliculas[-5:]
             print("\nNota: La lista de películas excede 20 elementos. Se han mostrado solo las primeras 5 y las últimas 5.")
+        
+        for pelicula in peliculas:
+            print(f"Fecha de publicación: {pelicula['fecha de publicacion']}")
+            print(f"Título original: {pelicula['titulo_original']}")
+            print(f"Presupuesto: {pelicula['presupuesto']}")
+            print(f"Ingresos: {pelicula['ingresos']}")
+            print(f"Ganancia: {pelicula['ganancia']}")
+            print(f"Duración: {pelicula['duracion']} minutos")
+            print(f"Puntaje de calificación: {pelicula['puntaje de calificacion']}")
+            print(f"Idioma original: {pelicula['idioma original']}")
+            print()
+
     except Exception as e:
         print(f"Error al procesar el requerimiento: {e}")
-
 
 
 def print_req_6(control):
@@ -186,8 +197,23 @@ def print_req_6(control):
         Función que imprime la solución del Requerimiento 6 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 6
-    año_inicial_consulta = input("Año donde se quire empezar la busqueda")
-    año_final_consulta = input("Año donde quiere terminar la busqueda")
+    año_inicial_consulta = input("Año donde se quire empezar la busqueda: ")
+    año_final_consulta = input("Año donde quiere terminar la busqueda: ")
+    idioma_original = input("Idioma Original: ") 
+    
+    rta = logic.req_6(control, idioma_original,año_inicial_consulta, año_final_consulta) 
+    
+    print("===== Resultados del Requerimiento 6 =====\n")
+    for año, datos in sorted(rta.items()):
+        print(f"Año: {año}")
+        print(f"Total de películas: {datos['total_peliculas']}")
+        print(f"Duración total: {datos['total_duracion']} minutos")
+        print(f"Duración promedio: {datos.get('promedio_duracion', 0):.2f} minutos")
+        print(f"Votación total: {datos['total_votacion']:.2f}")
+        print(f"Votación promedio: {datos.get('promedio_votacion', 0):.2f}")
+        print(f"Ganancias totales: {datos['total_ganancias']}")
+        print(f"Mejor película: {datos['mejor_pelicula']['titulo']} (Votación: {datos['mejor_pelicula']['votacion']:.2f})")
+        print(f"Peor película: {datos['peor_pelicula']['titulo']} (Votación: {datos['peor_pelicula']['votacion']:.2f})")
 
 
 def print_req_7(control):
