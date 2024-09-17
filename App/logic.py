@@ -193,7 +193,7 @@ def req_2(movies,idioma_buscado):
     buscadas = 0
     ultima_pelicula = None
     total_peliculas = lt.size(movies['fecha'])
-    for i in range(1, total_peliculas + 1):
+    for i in range(0, total_peliculas):
         idioma_pelicula = lt.get_element(movies['idioma'], i)
         if idioma_pelicula == idioma_buscado:
             buscadas += 1
@@ -253,57 +253,53 @@ def req_3(catalog, idioma, fecha_inicio, fecha_final):
         peliculas_filtradas = peliculas_filtradas[:5] + peliculas_filtradas[-5:]
     return total_filtradas, duracion_promedio, peliculas_filtradas
 
-def req_4(catalog,status_bs,f_inicial,f_final):
-    """
-    Retorna el resultado del requerimiento 4
-    """
-    # TODO: Modificar el requerimiento 4
-    pelis_bs = []
+def req_4(catalog, status_bs, f_inicial, f_final):
+    
+    pelis_bs = {"peli": [], "size": 0}
     formato_fecha = "%Y-%m-%d"
-    total_peliculas = lt.size(catalog['fecha'])
+    total_peliculas = int(lt.size(catalog['fecha']))
     fecha_inicio_dt = datetime.strptime(f_inicial, formato_fecha)
     fecha_final_dt = datetime.strptime(f_final, formato_fecha)
-    duracion_total = 0
-    peliculas_contadas = 0
+    duracion_promedio = 0
     for i in range(0, total_peliculas):
         fecha = lt.get_element(catalog['fecha'], i)
         status = lt.get_element(catalog['status'], i)
         fecha_pelicula = datetime.strptime(fecha, formato_fecha)
         if status == status_bs and fecha_inicio_dt <= fecha_pelicula <= fecha_final_dt:
-            pelicula_data = get_data(catalog, i)
-            fecha_publicacion = pelicula_data[0]
-            titulo_original = pelicula_data[1]
-            presupuesto = pelicula_data[4]
-            ingresos = pelicula_data[5]
-            ganancias = pelicula_data[6]
-            duracion = pelicula_data[3]
-            puntaje = pelicula_data[7]
-            idioma = pelicula_data[2]
-            try:
-                duracion_int = int(duracion) if duracion.isdigit() else 0
-            except:
-                duracion_int = 0
-            duracion_total += duracion_int
-            peliculas_contadas += 1
-            pelis_bs.append({
-                "Fecha de publicación": fecha_publicacion,
-                "Título original": titulo_original,
-                "Presupuesto": presupuesto,
-                "Ingresos": ingresos,
-                "Ganancia": ganancias,
-                "Duración": duracion,
-                "Puntaje de calificación": puntaje,
-                "Idioma original": idioma
-            })
-        if peliculas_contadas > 0:
-            promedio_duracion = duracion_total / peliculas_contadas
-        else:
-            promedio_duracion = 0
-        resultado = {
-        "Número total de películas": peliculas_contadas,
-        "Tiempo promedio de duración": promedio_duracion,
-        "Películas": pelis_bs}
-    return resultado
+            pelis_bs["size"] += 1
+            duracion_promedio += float(lt.get_element(catalog["duracion"], i))
+            presupuesto = lt.get_element(catalog["presupuesto"], i)
+            ingresos = lt.get_element(catalog["ingresos"], i)
+            if isinstance(presupuesto, str) or presupuesto == 0 or isinstance(ingresos, str):
+                ganancias = "Indefinido"
+            else:
+                ganancias = float(ingresos) - float(presupuesto)
+            informacion = {
+                "titulo_original": lt.get_element(catalog['or_title'], i),
+                "idioma": lt.get_element(catalog['idioma'], i),
+                "duracion": lt.get_element(catalog['duracion'], i),
+                "presupuesto": presupuesto,
+                "ingresos": ingresos,
+                "puntaje": lt.get_element(catalog['vote_average'], i),
+                "ganancias": ganancias
+            }
+            
+            pelis_bs["peli"].append(informacion)
+    peliculas_contadas = int(pelis_bs["size"])
+    
+    if peliculas_contadas == 0:
+        duracion_promedio = 0
+    else:
+        duracion_promedio = duracion_promedio / peliculas_contadas
+    
+    if peliculas_contadas >= 20:
+        resultado = pelis_bs["peli"][:5] + pelis_bs["peli"][-5:]
+    else:
+        resultado = pelis_bs["peli"]
+    
+    final =[peliculas_contadas, duracion_promedio, resultado]
+    
+    return final
 
 def req_5(catalog, limite_inferior, limite_superior, fecha_inicial, fecha_final):
     """
@@ -322,12 +318,11 @@ def req_5(catalog, limite_inferior, limite_superior, fecha_inicial, fecha_final)
         fecha = lt.get_element(catalog['fecha'], i)
         duracion = lt.get_element(catalog['duracion'], i)
         fecha_pelicula = datetime.strptime(fecha, formato_fecha)
-
         # Filtrar por fecha y limite inferior y superior 
-        if fecha_inicio <= fecha_pelicula <= fecha_final and duracion.isdigit():
-            duracion_int = int(duracion)
-            if limite_inferior <= duracion_int <= limite_superior:
-                pelicula_data = get_data(catalog, i)
+        if fecha_inicio <= fecha_pelicula <= fecha_final:
+            duracion = int(duracion)
+            if limite_inferior <= duracion <= limite_superior:
+                pelicula_data = lt.get_data(catalog, i)
                 fecha_publicacion = pelicula_data[0]
                 titulo_original = pelicula_data[1]
                 presupuesto = pelicula_data[4]
@@ -335,10 +330,8 @@ def req_5(catalog, limite_inferior, limite_superior, fecha_inicial, fecha_final)
                 ganancias = pelicula_data[6]
                 puntaje = pelicula_data[7]
                 idioma = pelicula_data[2]
-
-                duracion_total += duracion_int
+                duracion_total += duracion
                 peliculas_contadas += 1
-
                 # Guardar los datos de la película filtrada
                 pelis_filtradas.append({
                     "fecha de publicacion": fecha_publicacion,
@@ -350,14 +343,12 @@ def req_5(catalog, limite_inferior, limite_superior, fecha_inicial, fecha_final)
                     "puntaje de calificacion": puntaje,
                     "idioma original": idioma
                 })
-
-    # Calcular el tiempo promedio de duración
-    promedio_duracion = duracion_total / peliculas_contadas if peliculas_contadas > 0 else 0
-
-    # Mostrar primeras 5 y últimas 5 si hay más de 20 películas
+    # Calcular el tiempo promedio de duracion
+    promedio_duracion = duracion_total / peliculas_contadas
+    # Mostrar primeras 5 y ultimas 5 
     peliculas_mostradas = pelis_filtradas
-    if peliculas_contadas > 20:
-        peliculas_mostradas = pelis_filtradas[:5] + pelis_filtradas[-5:]
+    if peliculas_contadas >= 20:
+        peliculas_mostradas = lt.get_element(pelis_filtradas,5) + lt.get_element(pelis_filtradas,5)
 
     resultado = {
         "numero total de peliculas": peliculas_contadas,
@@ -369,56 +360,216 @@ def req_5(catalog, limite_inferior, limite_superior, fecha_inicial, fecha_final)
 
 
 
-def req_6(catalog , idioma_original, año_incial_consul, año_final_consul):
+def req_6(catalog, idioma_original, año_inicial_consul, año_final_consul):
     """
-    Retorna el resultado del requerimiento 6
+    Retorna el resultado del requerimiento 6.
     """
-    # TODO: Modificar el requerimiento 6
-    formato_año = "%Y"
-    año_final_consulta =  datetime.strptime(año_final_consul, formato_año).year
-    año_inicial_consulta =  datetime.strptime(año_incial_consul, formato_año).year
-    ganancias_acumuladas = 0 
-    prom_votacion = 0
-    total_peliculas_idioma = 0 
-    duracion_total = 0  
+    resultados_por_año = {}
+
+    try:
+        año_inicial_consulta = int(año_inicial_consul)
+        año_final_consulta = int(año_final_consul)
+    except ValueError:
+        raise ValueError("Los años ingresados deben ser válidos y en formato numérico.")
+
+    # Iterar sobre todas las películas usando array_list
+    total_peliculas = lt.size(catalog["fecha"])
     
-    for i in len(catalog["fecha"]): 
-        fecha_publicacion = datetime.strptime(pelicula_data[0], "%Y-%m-%d").year
-        if  año_inicial_consulta <= fecha_publicacion <= año_final_consulta: 
-            if catalog["idioma"] == idioma_original:
-                duracion = int(catalog["duracion"])
-                total_peliculas_idioma += 1  
-                pelicula_data = get_data(catalog, i)
-                titulo_original = pelicula_data[1]
-                presupuesto = pelicula_data[4]
-                ingresos = pelicula_data[5]
-                ganancias = pelicula_data[6] 
-                promedio_votacion_data = pelicula_data[9]
+    for i in range(1, total_peliculas + 1): 
+        pelicula_data = get_data(catalog, i)
+        fecha_publicacion = pelicula_data[0]  
+        idioma_pelicula = pelicula_data[2]
+        status = pelicula_data[8]
 
-                prom_votacion += promedio_votacion_data 
+        if fecha_publicacion and fecha_publicacion != "Desconocido":
+            try:
+                # Convertir la fecha a objeto datetime y extraer el año
+                año_publicacion = datetime.strptime(fecha_publicacion, "%Y-%m-%d").year
+            except ValueError:
+                continue  
+            
+            # Filtrar por rango de años, idioma y estado "Released"
+            if año_inicial_consulta <= año_publicacion <= año_final_consulta and idioma_pelicula == idioma_original and status == "Released":
                 
+                if año_publicacion not in resultados_por_año:
+                    resultados_por_año[año_publicacion] = {
+                        "total_peliculas": 0,
+                        "total_duracion": 0,
+                        "total_votacion": 0,
+                        "total_ganancias": 0,
+                        "mejor_pelicula": {"titulo": None, "votacion": 0},
+                        "peor_pelicula": {"titulo": None, "votacion": 10}
+                    }
+
+                año_data = resultados_por_año[año_publicacion]
+                año_data["total_peliculas"] += 1
                 
-                duracion_total += duracion
-                tiempo_prom = duracion/total_peliculas_idioma 
+                duracion = int(float(pelicula_data[3])) if pelicula_data[3] != "Desconocido" else 0
+
+                año_data["total_duracion"] += duracion
                 
-                ganancias_acumuladas = ganancias
+                promedio_votacion = float(pelicula_data[9]) if pelicula_data[9] != "Desconocido" else 0
+                año_data["total_votacion"] += promedio_votacion
+                
+                ganancias = int(pelicula_data[6]) if pelicula_data[6] != "Indefinido" else 0
+                año_data["total_ganancias"] += ganancias
+
+                if promedio_votacion > año_data["mejor_pelicula"]["votacion"]:
+                    año_data["mejor_pelicula"]["titulo"] = pelicula_data[1]
+                    año_data["mejor_pelicula"]["votacion"] = promedio_votacion
+
+                if promedio_votacion < año_data["peor_pelicula"]["votacion"]:
+                    año_data["peor_pelicula"]["titulo"] = pelicula_data[1]
+                    año_data["peor_pelicula"]["votacion"] = promedio_votacion
+
+    # Calcular los promedios finales
+    for año in resultados_por_año:
+        año_data = resultados_por_año[año]
+        if año_data["total_peliculas"] > 0:
+            año_data["promedio_votacion"] = año_data["total_votacion"] / año_data["total_peliculas"]
+            año_data["promedio_duracion"] = año_data["total_duracion"] / año_data["total_peliculas"]
+
+    return resultados_por_año
 
 
-def req_7(catalog):
+def req_7(catalog, compania, anio_inicio, anio_final):
     """
     Retorna el resultado del requerimiento 7
     """
     # TODO: Modificar el requerimiento 7
-    pass
+    anio_inicio = int(anio_inicio)
+    anio_final = int(anio_final)
+    total_peliculas = lt.size(catalog['fecha'])
+    peliculas_por_anio = {anio: {
+        "peliculas": [],
+        "duracion_total": 0,
+        "voto_total": 0,
+        "ganancias_total": 0,
+        "mejor_pelicula": {"titulo": None, "voto": float('-inf')},  
+        "peor_pelicula": {"titulo": None, "voto": float('inf')}  
+    } for anio in range(anio_inicio, anio_final + 1)}
 
 
-def req_8(catalog):
+    for i in range(total_peliculas):
+        fecha = lt.get_element(catalog['fecha'], i)
+        anio_pelicula = int(datetime.strptime(fecha, "%Y-%m-%d").year)
+        companias_pelicula = lt.get_element(catalog['production_companies'], i)
+        status_pelicula = lt.get_element(catalog['status'], i)
+
+
+        if anio_inicio <= anio_pelicula <= anio_final and compania in companias_pelicula and status_pelicula == "Released":
+            pelicula_data = get_data(catalog, i)
+            titulo = pelicula_data[1]
+            duracion = int(pelicula_data[3]) if pelicula_data[3].isdigit() else 0
+            presupuesto = pelicula_data[4]
+            ingresos = pelicula_data[5]
+            ganancias = int(ingresos) - int(presupuesto) if isinstance(ingresos, int) and isinstance(presupuesto, int) else 0
+            voto_promedio = float(pelicula_data[7])
+
+
+            anio_stats = peliculas_por_anio[anio_pelicula]
+            anio_stats["peliculas"].append(titulo)
+            anio_stats["duracion_total"] += duracion
+            anio_stats["voto_total"] += voto_promedio
+            anio_stats["ganancias_total"] += ganancias
+           
+            if voto_promedio > anio_stats["mejor_pelicula"]["voto"]:
+                anio_stats["mejor_pelicula"] = {"titulo": titulo, "voto": voto_promedio}
+            if voto_promedio < anio_stats["peor_pelicula"]["voto"]:
+                anio_stats["peor_pelicula"] = {"titulo": titulo, "voto": voto_promedio}
+
+
+    resultado = []
+    for anio, stats in peliculas_por_anio.items():
+        total_peliculas_anio = len(stats["peliculas"])
+        if total_peliculas_anio > 0:
+            duracion_promedio = stats["duracion_total"] / total_peliculas_anio
+            voto_promedio = stats["voto_total"] / total_peliculas_anio
+        else:
+            duracion_promedio = 0
+            voto_promedio = 0
+
+
+        resultado.append({
+            "año": anio,
+            "total_peliculas": total_peliculas_anio,
+            "voto_promedio": voto_promedio,
+            "duracion_promedio": duracion_promedio,
+            "ganancias_total": stats["ganancias_total"],
+            "mejor_pelicula": stats["mejor_pelicula"],
+            "peor_pelicula": stats["peor_pelicula"]
+        })
+
+
+    return resultado
+
+def req_8(catalog,consulta,genero):
     """
     Retorna el resultado del requerimiento 8
     """
     # TODO: Modificar el requerimiento 8
-    pass
+    formato_fecha = "%Y-%m-%d"
+    pelis_bs = lt.new_list()
+    total_votos = 0
+    total_duracion = 0
+    total_ganancias = 0
+    pelis_filtradas = 0
+    mejor_pelicula = None
+    peor_pelicula = None
+    mejor_puntaje = -float('inf')
+    peor_puntaje = float('inf')
 
+    total_peliculas = lt.size(catalog['fecha'])
+
+    for i in range(1, total_peliculas + 1):
+        fecha = lt.get_element(catalog['fecha'], i)
+        genero_gn = lt.get_element(catalog["genero"], i)
+        estado = lt.get_element(catalog["status"], i)
+        puntaje = lt.get_element(catalog["vote_average"], i)
+        duracion = lt.get_element(catalog["duracion"], i)
+        presupuesto = lt.get_element(catalog["presupuesto"], i)
+        ingresos = lt.get_element(catalog["ingresos"], i)
+        año_pelicula = datetime.strptime(fecha, formato_fecha).year
+        if año_pelicula == consulta and genero in genero_gn and estado == "Released":
+            pelis_filtradas += 1
+            total_votos += float(puntaje) if puntaje else 0
+            total_duracion += float(duracion) if duracion else 0
+            if presupuesto and ingresos:
+                try:
+                    ganancias = float(ingresos) - float(presupuesto)
+                except ValueError:
+                    ganancias = 0
+            else:
+                ganancias = 0
+            total_ganancias += ganancias
+            if float(puntaje) > mejor_puntaje:
+                mejor_puntaje = float(puntaje)
+                mejor_pelicula = lt.get_element(catalog['or_title'], i)
+
+            if float(puntaje) < peor_puntaje:
+                peor_puntaje = float(puntaje)
+                peor_pelicula = lt.get_element(catalog['or_title'], i)
+
+    # Calculo de promedios
+    promedio_votos = total_votos / pelis_filtradas if pelis_filtradas > 0 else 0
+    promedio_duracion = total_duracion / pelis_filtradas if pelis_filtradas > 0 else 0
+
+    resultado = {
+        "Total de películas publicadas": pelis_filtradas,
+        "Promedio de votación": promedio_votos,
+        "Tiempo promedio de duración": promedio_duracion,
+        "Ganancias acumuladas": total_ganancias,
+        "Mejor película": {
+            "Nombre": mejor_pelicula,
+            "Puntaje": mejor_puntaje
+        },
+        "Peor película": {
+            "Nombre": peor_pelicula,
+            "Puntaje": peor_puntaje
+        }
+    }
+
+    return resultado
 
 # Funciones para medir tiempos de ejecucion
 
