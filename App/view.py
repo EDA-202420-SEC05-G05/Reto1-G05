@@ -145,34 +145,46 @@ def print_req_4(control):
         
 def print_req_5(control):
     """
-        Función que imprime la solución del Requerimiento 5 en consola
+    Función que imprime la solución del Requerimiento 5 en consola.
     """
-    # TODO: Imprimir el resultado del requerimiento 5
+    # Obtener entradas del usuario
     fecha_inicial = input("Ingrese la fecha inicial del periodo a consultar (formato: YYYY-MM-DD): ")
     fecha_final = input("Ingrese la fecha final del periodo a consultar (formato: YYYY-MM-DD): ")
-    limite_inferior = input("Ingrese el limite inferior")
-    limite_superior = input("Ingrese el limite superior")
+    
+    # Convertir límites inferiores y superiores a enteros
     try:
-        rta = logic.req_5(control, limite_inferior, limite_superior, fecha_inicial, fecha_final)
-        print(f"numero total de peliculas entre {limite_inferior}, {limite_superior}")
+        limite_inferior = int(input("Ingrese el limite inferior (en minutos): "))
+        limite_superior = int(input("Ingrese el limite superior (en minutos): "))
+    except ValueError:
+        print("Error: Los límites deben ser números enteros.")
+        return
+    # Llamar a la función req_5 y manejar posibles errores
+    try:
+        rta = logic.req_5(control, fecha_inicial, fecha_final, limite_inferior, limite_superior)
+        
         print(f"Número total de películas con duración entre {limite_inferior} y {limite_superior} minutos: {rta['numero total de peliculas']}")
         print(f"Tiempo promedio de duración: {rta['tiempo promedio de duracion']:.2f} minutos\n")
 
         # Imprimir los detalles de las películas
-        print("Listado de películas que cumplen con los criterios de busqueda:")
-        for pelicula in rta["peliculas"]:
-            print(f"fecha de publicacion: {pelicula['fecha de publicacion']}")
-            print(f"titulo original: {pelicula['titulo_original']}")
-            print(f"presupuesto: {pelicula['presupuesto']}")
-            print(f"ingresos: {pelicula['ingresos']}")
-            print(f"ganancia: {pelicula['ganancia']}")
-            print(f"duración: {pelicula['duracion']} minutos")
-            print(f"puntaje de calificación: {pelicula['puntaje de calificacion']}")
-            print(f"idioma original: {pelicula['idioma original']}")
+        print("Listado de películas que cumplen con los criterios de búsqueda:")
+        peliculas = rta["peliculas"]
         
-        # Si la lista de películas excede 20 elementos
-        if len(rta["Películas"]) > 20:
+        # Mostrar solo las primeras 5 y últimas 5 si hay más de 20
+        if len(peliculas) > 20:
+            peliculas = peliculas[:5] + peliculas[-5:]
             print("\nNota: La lista de películas excede 20 elementos. Se han mostrado solo las primeras 5 y las últimas 5.")
+        
+        for pelicula in peliculas:
+            print(f"Fecha de publicación: {pelicula['fecha de publicacion']}")
+            print(f"Título original: {pelicula['titulo_original']}")
+            print(f"Presupuesto: {pelicula['presupuesto']}")
+            print(f"Ingresos: {pelicula['ingresos']}")
+            print(f"Ganancia: {pelicula['ganancia']}")
+            print(f"Duración: {pelicula['duracion']} minutos")
+            print(f"Puntaje de calificación: {pelicula['puntaje de calificacion']}")
+            print(f"Idioma original: {pelicula['idioma original']}")
+            print()
+
     except Exception as e:
         print(f"Error al procesar el requerimiento: {e}")
 
@@ -225,6 +237,28 @@ def print_req_8(control):
         Función que imprime la solución del Requerimiento 8 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 8
+    anio_consulta = input("Ingrese el año de consulta (formato: YYYY): ")
+    genero_consulta = input("Ingrese el género de las películas (ej.: 'Action', 'Comedy', etc.): ")
+    try:
+        resultado = logic.req_8(control, int(anio_consulta), genero_consulta)
+        print("\nTotal de películas publicadas en el año {} de género '{}': {}".format(
+            anio_consulta, genero_consulta, resultado["Total de películas publicadas"]))
+        print("Promedio de votación de las películas: {:.2f}".format(
+            resultado["Promedio de votación"]))
+        print("Tiempo promedio de duración: {:.2f} minutos".format(
+            resultado["Tiempo promedio de duración"]))
+        print("Ganancias acumuladas: {}".format(
+            resultado["Ganancias acumuladas"]))
+        print("\nMejor película del año {} en el género '{}':".format(anio_consulta, genero_consulta))
+        print("Nombre: " + resultado["Mejor película"]["Nombre"])
+        print("Puntaje: {:.2f}".format(resultado["Mejor película"]["Puntaje"]))
+        print("\nPeor película del año {} en el género '{}':".format(anio_consulta, genero_consulta))
+        print("Nombre: " + resultado["Peor película"]["Nombre"])
+        print("Puntaje: {:.2f}".format(resultado["Peor película"]["Puntaje"]))
+
+    except Exception as e:
+        print(f"Error al procesar el requerimiento: {e}")
+
     anio_consulta = input("Ingrese el año de consulta (formato: YYYY): ")
     genero_consulta = input("Ingrese el género de las películas (ej.: 'Action', 'Comedy', etc.): ")
     try:

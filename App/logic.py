@@ -253,6 +253,12 @@ def req_3(catalog, idioma, fecha_inicio, fecha_final):
         peliculas_filtradas = peliculas_filtradas[:5] + peliculas_filtradas[-5:]
     return total_filtradas, duracion_promedio, peliculas_filtradas
 
+def req_4(catalog,status_bs,f_inicial,f_final):
+    """
+    Retorna el resultado del requerimiento 4
+    """
+    # TODO: Modificar el requerimiento 4
+    pelis_bs = lt.new_list()
 def req_4(catalog, status_bs, f_inicial, f_final):
     
     pelis_bs = {"peli": [], "size": 0}
@@ -260,6 +266,9 @@ def req_4(catalog, status_bs, f_inicial, f_final):
     total_peliculas = int(lt.size(catalog['fecha']))
     fecha_inicio_dt = datetime.strptime(f_inicial, formato_fecha)
     fecha_final_dt = datetime.strptime(f_final, formato_fecha)
+    duracion_total = 0
+    peliculas_contadas = 0
+    for i in range(1, total_peliculas+1):
     duracion_promedio = 0
     for i in range(0, total_peliculas):
         fecha = lt.get_element(catalog['fecha'], i)
@@ -360,6 +369,7 @@ def req_5(catalog, limite_inferior, limite_superior, fecha_inicial, fecha_final)
 
 
 
+def req_6(catalog, idioma_original, año_inicial_consul, año_final_consul):
 def req_6(catalog, idioma_original, año_inicial_consul, año_final_consul):
     """
     Retorna el resultado del requerimiento 6.
