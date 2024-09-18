@@ -32,9 +32,9 @@ This repository is part of the data structure and algorithms (#EDA) teaching fra
 
 The students edit this section to add their names, Uniandes emails, and specify which project functionality of the project they will implement.
 
-1. Daniel Felipe Diab G, d.diab@uniandes.edu.co, Student No. 1 owned functionality.
-1. Gabriela Gonzalez, g.gonzalezg2@uniandes.edu.co, Student No. 2 owned functionality.
-1. Juan Manuel Hernandez, jm.hernandez23@uniandes.edu.co, Student No. 3 owned functionality.
+1. Daniel Felipe Diab G, d.diab@uniandes.edu.co, Student No. 1 owned functionality. Requerimiento individual: 4
+1. Gabriela Gonzalez, g.gonzalezg2@uniandes.edu.co, Student No. 2 owned functionality.Requerimiento individual: 3
+1. Juan Manuel Hernandez, jm.hernandez23@uniandes.edu.co, Student No. 3 owned functionality.Requerimiento individual: 5
 
 [Back to top](#retos-template)
 
