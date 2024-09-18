@@ -190,17 +190,44 @@ def req_2(movies,idioma_buscado):
     Retorna el resultado del requerimiento 2
     """
     # TODO: Modificar el requerimiento 2
-    buscadas = 0
-    ultima_pelicula = None
+    
     total_peliculas = lt.size(movies['fecha'])
+    peliculas_con_fecha = []
+
     for i in range(0, total_peliculas):
         idioma_pelicula = lt.get_element(movies['idioma'], i)
         if idioma_pelicula == idioma_buscado:
-            buscadas += 1
-            ultima_pelicula = get_data(movies, i)
-    if buscadas == 0:
-        raise IndexError("No se encontraron películas en el idioma:" + str(idioma_buscado))
-    return buscadas,ultima_pelicula
+            fecha = lt.get_element(movies['fecha'], i)
+            peliculas_con_fecha.append((i, fecha)) 
+
+    peliculas_con_fecha.sort(key=lambda x: x[1], reverse=True)
+    
+    if len(peliculas_con_fecha) == 0:
+        raise IndexError(f"No se encontraron películas en el idioma: {idioma_buscado}")
+    
+    peli_reciente_id = peliculas_con_fecha[0][0]
+    peli_reciente = get_data(movies, peli_reciente_id)
+
+    presupuesto = peli_reciente[3]
+    ingresos = peli_reciente[4] 
+    try:
+        ganancias = float(ingresos) - float(presupuesto) if isinstance(ingresos, (int, float)) and isinstance(presupuesto, (int, float)) else "Indefinido"
+    except ValueError:
+        ganancias = "Indefinido"
+
+    resultado = {
+        "Total de películas publicadas": len(peliculas_con_fecha),
+            "Fecha de publicación": peli_reciente[0],
+            "Título original": peli_reciente[1],
+            "Presupuesto": presupuesto,
+            "Ingresos": ingresos,
+            "Ganancias": ganancias,
+            "Duración": peli_reciente[2],
+            "Puntaje": peli_reciente[9]
+        
+    }
+
+    return resultado
 
 def req_3(catalog, idioma, fecha_inicio, fecha_final):
     """

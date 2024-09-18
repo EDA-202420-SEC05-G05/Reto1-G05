@@ -73,11 +73,12 @@ def print_req_1(control):
             print(f"Presupuesto: {peli_reciente[4]}")
             print(f"Ingresos: {peli_reciente[5]}")
             print(f"Ganancias: {peli_reciente[6]}")
-            print(f"Puntaje: {peli_reciente[7]}")
+            print(f"Puntaje: {peli_reciente[9]}")
            
         
     except ValueError:
         print("Error: Debes ingresar un número válido para la duración mínima.")
+
 
 
 def print_req_2(control):
@@ -87,16 +88,15 @@ def print_req_2(control):
     # TODO: Imprimir el resultado del requerimiento 2
     idioma = input("Ingrese el idioma original en el que desea conocer la última película publicada: ")
     try:
-        buscadas, ultima_pelicula = logic.req_2(control, idioma)
-        print("Número de películas con ese idioma original: " + str(buscadas))
-        print("Fecha de publicación de la última película: " + str(ultima_pelicula[0]))
-        print("Título original de la última película: " + str(ultima_pelicula[1]))
-        print("Presupuesto de la última película: " + str(ultima_pelicula[4]))
-        print("Dinero recaudado de la última película: " + str(ultima_pelicula[5]))
-        print("Ganancia final de la última película: " + str(ultima_pelicula[6]))
-        print("Duración en minutos de la última película: " + str(ultima_pelicula[3]))
-        print("Puntaje de calificación de la película: " + str(ultima_pelicula[7]))
-        print("Número de votos de la película: " + str(ultima_pelicula[8]))
+        resultado = logic.req_2(control, idioma)
+        print("Número de películas con ese idioma original: " + str(resultado["Total de películas publicadas"]))
+        print("Fecha de publicación de la última película: " + str(resultado["Fecha de publicación"]))
+        print("Título original de la última película: " + str(resultado["Título original"]))
+        print("Presupuesto de la última película: " + str(resultado["Presupuesto"]))
+        print("Dinero recaudado de la última película: " + str(resultado["Ingresos"]))
+        print("Ganancia final de la última película: " + str(resultado["Ganancias"]))
+        print("Duración en minutos de la última película: " + str(resultado["Duración"]))
+        print("Puntaje de calificación de la película: " + str(resultado["Puntaje"]))
     except IndexError as e:
         print(e)
 
@@ -105,15 +105,49 @@ def print_req_3(control):
     """
         Función que imprime la solución del Requerimiento 3 en consola
     """
-    # TODO: Imprimir el resultado del requerimiento 3
+    
     idioma = input("Ingrese el idioma original de publicación (ej.: en, fr, zh): ")
     fecha_inicio = input("Ingrese la fecha inicial del periodo a consultar (formato YYYY-MM-DD): ")
     fecha_final = input("Ingrese la fecha final del periodo a consultar (formato YYYY-MM-DD): ")
+
     try:
-        resp = logic.req_3(control, idioma, fecha_inicio, fecha_final)
-        print(resp)
+        resultado = logic.req_3(control, idioma, fecha_inicio, fecha_final)
+        
+        if isinstance(resultado, str):
+            print(resultado)
+        else:
+            total_filtradas, duracion_promedio, peliculas_filtradas = resultado
+
+
+            print("\nNúmero total de películas en el idioma '{}' entre {} y {}: {}".format(
+                idioma, fecha_inicio, fecha_final, total_filtradas))
+            print("Tiempo promedio de duración de las películas: {:.2f} minutos\n".format(
+                duracion_promedio))
+            
+         
+            num_peliculas = len(peliculas_filtradas)
+            if total_filtradas > 20:
+                print("Mostrando las primeras 5 y las últimas 5 películas, ya que hay más de 20 en total:")
+            
+     
+            print("Listado de películas que cumplen con los criterios de búsqueda:")
+            for pelicula in peliculas_filtradas:
+                print("------------------------------------")
+                print(f"Título original: {pelicula[1]}")
+                print(f"Presupuesto: {pelicula[2]}")
+                print(f"Ingresos: {pelicula[3]}")
+                print(f"Ganancia: {pelicula[4]}")
+                print(f"Duración: {pelicula[5]} minutos")
+                print(f"Puntaje de calificación: {pelicula[6]}")
+                print(f"Idioma original: {pelicula[7]}")
+                print(f"Fecha de publicación: {pelicula[0]}")
+
+          
+       
+
     except ValueError:
         print("Error: Formato de fecha incorrecto.")
+    
         
 def print_req_4(control):
     """
@@ -142,6 +176,7 @@ def print_req_4(control):
         print("Duración: " + str(pelicula["duracion"]) + " minutos")
         print("Puntaje de calificación: " + str(pelicula["puntaje"]))
         print("Idioma original: " + pelicula["idioma"])
+
         
 def print_req_5(control):
     """
@@ -183,7 +218,7 @@ def print_req_5(control):
             print(f"Duración: {pelicula['duracion']} minutos")
             print(f"Puntaje de calificación: {pelicula['puntaje de calificacion']}")
             print(f"Idioma original: {pelicula['idioma original']}")
-            print()
+            
 
     except Exception as e:
         print(f"Error al procesar el requerimiento: {e}")
@@ -225,6 +260,7 @@ def print_req_7(control):
     try:
         resp = logic.req_7(control, compania, anio_inicio, anio_final)
         print(resp)
+
     except ValueError:
         print("Error: el nombre de la compañia productora o los años ingresados son incorrectos.")
    
@@ -255,6 +291,7 @@ def print_req_8(control):
         print("\nPeor película del año {} en el género '{}':".format(anio_consulta, genero_consulta))
         print("Nombre: " + resultado["Peor película"]["Nombre"])
         print("Puntaje: {:.2f}".format(resultado["Peor película"]["Puntaje"]))
+ 
 
     except Exception as e:
         print(f"Error al procesar el requerimiento: {e}")
@@ -277,6 +314,7 @@ def print_req_8(control):
         print("\nPeor película del año {} en el género '{}':".format(anio_consulta, genero_consulta))
         print("Nombre: " + resultado["Peor película"]["Nombre"])
         print("Puntaje: {:.2f}".format(resultado["Peor película"]["Puntaje"]))
+        print(logic.get_time())
 
     except Exception as e:
         print(f"Error al procesar el requerimiento: {e}")
@@ -322,7 +360,7 @@ def main():
 
         elif int(inputs) == 9:
             print_req_8(control)
-
+            
         elif int(inputs) == 0:
             working = False
             print("\nGracias por utilizar el programa") 
